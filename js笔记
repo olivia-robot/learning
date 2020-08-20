@@ -1,0 +1,68 @@
+1. fs
+Node.js内置的fs模块就是文件系统模块，负责读写文件。
+
+（1）异步读取文件
+'use strict';
+
+var fs = require('fs');
+
+fs.readFile('sample.txt', 'utf-8', function (err, data) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(data);
+    }
+});
+异步读取时，传入的回调函数接收两个参数，当正常读取时，err参数为null，data参数为读取到的String。当读取发生错误时，err参数代表一个错误对象，data为undefined。
+这也是Node.js标准的回调函数：第一个参数代表错误信息，第二个参数代表结果。后面我们还会经常编写这种回调函数。
+
+不传入文件编码时，回调函数的data参数将返回一个Buffer对象。在Node.js中，Buffer对象就是一个包含零个或任意个字节的数组（注意和Array不同）。
+Buffer对象可以和String作转换，例如，把一个Buffer对象转换成String：
+// Buffer -> String
+var text = data.toString('utf-8');
+console.log(text);
+或者把一个String转换成Buffer：
+// String -> Buffer
+var buf = Buffer.from(text, 'utf-8');
+console.log(buf);
+
+（2）同步读取文件
+'use strict';
+
+var fs = require('fs');
+
+var data = fs.readFileSync('sample.txt', 'utf-8');
+console.log(data);
+可见，原异步调用的回调函数的data被函数直接返回，函数名需要改为readFileSync，其它参数不变。
+如果同步读取文件发生错误，则需要用try...catch捕获该错误：
+try {
+    var data = fs.readFileSync('sample.txt', 'utf-8');
+    console.log(data);
+} catch (err) {
+    // 出错了
+}
+
+（3）写文件
+'use strict';
+
+var fs = require('fs');
+
+var data = 'Hello, Node.js';
+fs.writeFile('output.txt', data, function (err) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log('ok.');
+    }
+});
+writeFile()的参数依次为文件名、数据和回调函数。如果传入的数据是String，默认按UTF-8编码写入文本文件，如果传入的参数是Buffer，则写入的是二进制文件。
+回调函数由于只关心成功与否，因此只需要一个err参数。
+
+writeFile()也有一个同步方法，叫writeFileSync()：
+'use strict';
+
+var fs = require('fs');
+
+var data = 'Hello, Node.js';
+fs.writeFileSync('output.txt', data);
+
